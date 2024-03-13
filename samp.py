@@ -91,7 +91,7 @@ class Receiver(object):
     
 	def receive_notification(self, private_key, sender_id, mtype, params, extra):
 		
-		self.log_info('*** [receive_notification] Received notification mtype='+mtype) # +' params='+str(params))
+		self.log_info('*** [receive_notification] Received notification mtype='+mtype+' from sender_id='+sender_id) # +' params='+str(params))
 		
 		#self.params = params
 		#self.received = True
@@ -100,7 +100,7 @@ class Receiver(object):
         	
 			# retrieve coordinates sent
 			try:
-				ra = float(params['ra'])/15.0
+				ra = float(params['ra'])
 				dec = float(params['dec'])
 				self.log_info(f"*** [receive_notification] Received coordinates ra={ra:.6f} dec={dec:.6f}")
 			except Exception as e:
@@ -110,7 +110,10 @@ class Receiver(object):
 				# Slew mount to coordinates
 				try:
 					# parent class is MySampClient, parent.parent class is SAMPForm
-					self.parent.parent.slewMount(ra, dec)
+					self.parent.parent.fromLabel.Text = 'Coordinates from '+str(sender_id)
+					self.parent.parent.raTextBox.Text = str(ra)
+					self.parent.parent.decTextBox.Text= str(dec)
+					#self.parent.parent.slewMount(ra/15.0, dec)
 				except Exception as e:
 					self.log_error('ERROR: '+str(e))
 			
@@ -335,19 +338,119 @@ class SAMPForm(Form):
 	"""
 
 	def __init__(self):
-		self.Text = "SAMP Control"
-		self.Width=1000
-		self.Height=500
+		self.Text = "SAMP Control Panel"
+		#self.Width=1000
+		#self.Height=500
 		self.setup()
 
 	def setup(self):
+
 		# define log panel
-		self.logPanel = StatePanel("Log", width=500, height=400)
-		self.logPanel.Location = Point(300,10)
+		self.logPanel = StatePanel("Log", width=528, height=237)
+		self.logPanel.Location = Point(206,12)
 		self.logPanel.BackColor = Color.White
 		self.logPanel.BorderStyle = BorderStyle.FixedSingle
+
+		# logPanel
+		#
+		#self.logPanel.Controls.Add(self.logVScrollBar)
+		#self.logPanel.Controls.Add(self.logHScrollBar)
+
 		# add log panel
+		#self.Controls.Add(self.logPanel)
+
+
+		self.fromLabel = Label()
+		self.logHScrollBar = HScrollBar()
+		self.logVScrollBar = VScrollBar()
+		self.raTextBox = TextBox()
+		self.raLabel = Label()
+		self.decLabel = Label()
+		self.decTextBox = TextBox()
+		self.slewButton = Button()
+
+		#self.logPanel.SuspendLayout()
+		#self.SuspendLayout()
+
+		#
+		# fromLabel
+		#
+		self.fromLabel.Location = Point(13, 13)
+		self.fromLabel.Name = "label_from"
+		self.fromLabel.Size = Size(200, 23)
+		self.fromLabel.Text = "Coordinates from"
+		#self.label_from.Click += self.Label1Click
+		#
+
+		#
+		# raLabel
+		#
+		self.raLabel.Location = Point(16, 42)
+		self.raLabel.Name = "raLabel"
+		self.raLabel.Size = Size(50, 23)
+		self.raLabel.Text = "RA (J2000)"
+		#self.raLabel.Click += self.raLabelClick
+		#
+		# raTextBox
+		#
+		self.raTextBox.Location = Point(87, 39)
+		self.raTextBox.Name = "raTextBox"
+		self.raTextBox.Size = Size(100, 20)
+		#
+		# decLabel
+		#
+		self.decLabel.Location = Point(16, 65)
+		self.decLabel.Name = "decLabel"
+		self.decLabel.Size = Size(50, 23)
+		self.decLabel.Text = "Dec (J2000)"
+		#self._decLabel.Click += self.decLabelClick
+		#
+		# decTextBox
+		#
+		self.decTextBox.Location = Point(87, 62)
+		self.decTextBox.Name = "decTextBox"
+		self.decTextBox.Size = Size(100, 20)
+		#self.decTextBox.TextChanged += self.decTextChanged
+		#
+		# slewButton
+		#
+		self.slewButton.Location = Point(52, 92)
+		self.slewButton.Name = "slewButton"
+		self.slewButton.Size = Size(108, 23)
+		self.slewButton.TabIndex = 6
+		self.slewButton.Text = "Slew"
+		self.slewButton.UseVisualStyleBackColor = True
+		self.slewButton.Click += self.slewButtonClick
+		#
+		# MainForm
+		#
+		self.ClientSize = Size(746, 261)
+
+		self.Controls.Add(self.slewButton)
+		self.Controls.Add(self.decLabel)
+		self.Controls.Add(self.decTextBox)
+		self.Controls.Add(self.raLabel)
+		self.Controls.Add(self.raTextBox)
 		self.Controls.Add(self.logPanel)
+		self.Controls.Add(self.fromLabel)
+		#self.Name = "MainForm"
+		#self.Text = "Wivona"
+		#self.logPanel.ResumeLayout(False)
+		#self.ResumeLayout(False)
+		self.PerformLayout()
+
+	def slewButtonClick(self, sender, e):
+		# Slew mount to coordinates
+		try:
+			# retrieve coordinates from text boxes
+			ra = float(self.raTextBox.Text)
+			dec = float(self.decTextBox.Text)
+
+			# slew mount, expect RA coordinates in Hours
+			self.slewMount(ra/15.0, dec)
+		except Exception as e:
+			self.log_error('ERROR: ' + str(e))
+		pass
 
 	def log_info(self, text):
 		self.logPanel.log_info(time.strftime("%H:%M:%S") + ": " + text)
@@ -363,7 +466,7 @@ class SAMPForm(Form):
 
 		#self.log_info("DIALOG")
 		#confirm = MessageBox.Show(f"Do you want to slew the mount to RA={ra:.6f} DEC={dec:.6f} ?","Confirm",MessageBoxButtons.YesNo)
-		confirm = MessageBox.Show(Form.ActiveForm,f"Do you want to slew the mount to RA={ra:.6f} DEC={dec:.6f} ?","Confirm",MessageBoxButtons.YesNo)
+		confirm = MessageBox.Show(Form.ActiveForm,f"Do you want to slew the mount to RA={ra:.6f} h DEC={dec:.6f} deg ?","Confirm Slew",MessageBoxButtons.YesNo)
 
 		#self.log_info(str(confirm))
 
