@@ -102,7 +102,7 @@ class Receiver(object):
 		except Exception as e:
 			self.log_error(str(e))
 
-		self.log_info('*** [receive_notification] Received notification mtype='+mtype+' from sender_name='+sender_name) # +' params='+str(params))
+		self.log_info('Received notification mtype='+mtype+' from '+sender_name) # +' params='+str(params))
 		
 		#self.params = params
 		#self.received = True
@@ -113,7 +113,7 @@ class Receiver(object):
 			try:
 				ra = float(params['ra'])
 				dec = float(params['dec'])
-				self.log_info(f"*** [receive_notification] Received coordinates ra={ra:.6f} dec={dec:.6f}")
+				self.log_info(f"Received coordinates ra={ra:.6f} dec={dec:.6f}")
 			except Exception as e:
 				self.log_error('ERROR: '+str(e))
 		
@@ -176,7 +176,7 @@ class MySampClient:
 		Connect to SAMP hub and setup notification bindings
 		"""
     
-		self.log_info('Connecting...')
+		self.log_info('Connecting to SAMP hub...')
 		try: 
 			self.client.connect()
 			#log_info(self.client.get_private_key())
@@ -190,10 +190,10 @@ class MySampClient:
 
 			try:
 				if self.parent == None: # CLI, use function
-					self.log_info('Binding mtype='+mtype+' to func function_samp_receive_notification_pointat')
+					self.log_info('Binding notification for mtype='+mtype+' to func function_samp_receive_notification_pointat')
 					self.client.bind_receive_notification(mtype, function_samp_receive_notification_pointat)
 				else: # GUI, use method
-					self.log_info('Binding mtype='+mtype+' to method self.receiver.receive_notification')
+					self.log_info('Binding notification for mtype='+mtype+' to method self.receiver.receive_notification')
 					self.client.bind_receive_notification(mtype, self.receiver.receive_notification)
 			except Exception as e:
 				self.log_error(str(e))
@@ -278,10 +278,11 @@ def function_slew_mount(ra, dec):
 	Slew mount
 	FOR TESTING
 	"""
-	print(f"=== [func] Slewing mount to ra={ra} dec={dec}")
+
+	print(f"Slewing mount to RA={ra} h Dec={dec} deg")
 	radp = RADecPosition(ra, dec, Epoch.J2000)
 	SharpCap.Mounts.Current.SlewTo(radp)
-	print(f"=== [func] Slew in progress")
+	print(f"Slew in progress")
 	
 # GUI
 
@@ -389,7 +390,7 @@ class SAMPForm(Form):
 		self.fromLabel.Location = Point(13, 13)
 		self.fromLabel.Name = "label_from"
 		self.fromLabel.Size = Size(200, 23)
-		self.fromLabel.Text = "Coordinates from"
+		#self.fromLabel.Text = "Coordinates from"
 		#self.label_from.Click += self.Label1Click
 		#
 
@@ -475,23 +476,28 @@ class SAMPForm(Form):
 		"""
 		#self.log_info(f"=== [method] Request to slew mount to ra={ra:.6f} dec={dec:.6f}")
 
-		#self.log_info("DIALOG")
-		#confirm = MessageBox.Show(f"Do you want to slew the mount to RA={ra:.6f} DEC={dec:.6f} ?","Confirm",MessageBoxButtons.YesNo)
-		confirm = MessageBox.Show(Form.ActiveForm,f"Slew the mount to RA={ra:.6f} h DEC={dec:.6f} deg ?","Confirm Slew",MessageBoxButtons.YesNo)
+		current_mount = SharpCap.Mounts.Current
+		if current_mount.IsAvailable:
 
-		#self.log_info(str(confirm))
 
-		if str(confirm) == 'Yes':	
-			try:
-				radp = RADecPosition(ra, dec, Epoch.J2000) # Aladin coordinates sent in J2000
-				SharpCap.Mounts.Current.SlewTo(radp)
-			except Exception as e:
-				self.log_error(str(e))
-			else:
-				self.log_info(f"=== [method] Slew in progress")
-		
-		
-		
+			#self.log_info("DIALOG")
+			#confirm = MessageBox.Show(f"Do you want to slew the mount to RA={ra:.6f} DEC={dec:.6f} ?","Confirm",MessageBoxButtons.YesNo)
+			confirm = MessageBox.Show(Form.ActiveForm,f"Slew the mount to RA={ra:.6f} h DEC={dec:.6f} deg ?","Confirm Slew",MessageBoxButtons.YesNo)
+
+			#self.log_info(str(confirm))
+
+			if str(confirm) == 'Yes':
+				try:
+					radp = RADecPosition(ra, dec, Epoch.J2000) # Aladin coordinates sent in J2000
+					current_mount.SlewTo(radp)
+				except Exception as e:
+					self.log_error(str(e))
+				else:
+					self.log_info(f"Slew in progress")
+
+		else:
+			self.log_info("Mount is not available")
+
 		
 	def startSAMP(self):
 		# Create client, attach to this form
@@ -522,7 +528,7 @@ def create_form():
 	form.StartPosition = FormStartPosition.CenterScreen
 	form.TopMost=False # True => windows always on top
 	form.Show()
-	form.log_info("READY")
+	form.log_info("Form ready")
 	#form.log_error("TEST ERROR")
 	form.startSAMP()
 
