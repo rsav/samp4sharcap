@@ -5,14 +5,17 @@
 # Author: renaud.savalle@obspm.fr
 
 import time
+# Mount control: use SharpCap exposed classes
 from SharpCap.Base import RADecPosition, Epoch
 
-# GUI
+# GUI: use .NET classes
 import clr
 clr.AddReference("System.Windows.Forms")
 clr.AddReference("System.Drawing")
 from System.Windows.Forms import *
 from System.Drawing import *
+
+# Icon for SAMP button
 padc_icon="C:\\Users\\User\\Documents\\SAMP\\PADC.ico"
 
 
@@ -466,7 +469,7 @@ class SAMPForm(Form):
 
 		#self.log_info("DIALOG")
 		#confirm = MessageBox.Show(f"Do you want to slew the mount to RA={ra:.6f} DEC={dec:.6f} ?","Confirm",MessageBoxButtons.YesNo)
-		confirm = MessageBox.Show(Form.ActiveForm,f"Do you want to slew the mount to RA={ra:.6f} h DEC={dec:.6f} deg ?","Confirm Slew",MessageBoxButtons.YesNo)
+		confirm = MessageBox.Show(Form.ActiveForm,f"Slew the mount to RA={ra:.6f} h DEC={dec:.6f} deg ?","Confirm Slew",MessageBoxButtons.YesNo)
 
 		#self.log_info(str(confirm))
 
