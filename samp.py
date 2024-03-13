@@ -93,8 +93,16 @@ class Receiver(object):
 	#	self.client.reply(msg_id, {"samp.status": "samp.ok", "samp.result": {}})
     
 	def receive_notification(self, private_key, sender_id, mtype, params, extra):
-		
-		self.log_info('*** [receive_notification] Received notification mtype='+mtype+' from sender_id='+sender_id) # +' params='+str(params))
+
+		# try to get sender name
+		sender_name = sender_id # by default we only know the id (ex: "c1")
+		try:
+			metadata = self.client.get_metadata(sender_id)
+			sender_name = metadata["samp.name"]
+		except Exception as e:
+			self.log_error(str(e))
+
+		self.log_info('*** [receive_notification] Received notification mtype='+mtype+' from sender_name='+sender_name) # +' params='+str(params))
 		
 		#self.params = params
 		#self.received = True
@@ -113,7 +121,7 @@ class Receiver(object):
 				# Slew mount to coordinates
 				try:
 					# parent class is MySampClient, parent.parent class is SAMPForm
-					self.parent.parent.fromLabel.Text = 'Coordinates from '+str(sender_id)
+					self.parent.parent.fromLabel.Text = 'Coordinates from '+str(sender_name)
 					self.parent.parent.raTextBox.Text = str(ra)
 					self.parent.parent.decTextBox.Text= str(dec)
 					#self.parent.parent.slewMount(ra/15.0, dec)
@@ -490,7 +498,21 @@ class SAMPForm(Form):
 		self.samp_client = MySampClient(parent=self)
 		# Connect to HUB
 		self.samp_client.connect()
-		
+
+
+	def OnClosed(self, e):
+		"""
+		Called when the SAMP control form is closed
+		"""
+		try:
+			#confirm = MessageBox.Show(Form.ActiveForm, f"Disconnect from SAMP ?",
+			#						  "Confirm Disconnect", MessageBoxButtons.YesNo)
+
+			self.samp_client.disconnect()
+		except:
+			self.log_error(str(e))
+		Form.OnClosed(self, e)
+
 
 def create_form():
 	#print("create_form")
@@ -498,7 +520,7 @@ def create_form():
 	#print(padc_icon)
 	#form.icon = Icon(padc_icon)
 	form.StartPosition = FormStartPosition.CenterScreen
-	form.TopMost=False # windows on top
+	form.TopMost=False # True => windows always on top
 	form.Show()
 	form.log_info("READY")
 	#form.log_error("TEST ERROR")
@@ -515,7 +537,7 @@ samp_init()
 #c=MySampClient() # done in GUI
 # init GUI
 print("Creating GUI")
-custom_button = SharpCap.AddCustomButton("SAMP |", Image.FromFile(padc_icon), "SAMP", create_form)
+custom_button = SharpCap.AddCustomButton("SAMP", Image.FromFile(padc_icon), "SAMP", create_form)
 
 
 	
