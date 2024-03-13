@@ -1,15 +1,17 @@
-# SAMP functions for SharpCap
+# SAMP script for SharpCap
 # Version 1.2 2024-03-12 GUI
 # Version 1.1 2024-01-21 control mount from Aladin
 # Version 1.0 2024-01-17 initial version 
-# Author: renaud.savalle@obspm.fr
+# Author: Renaud.Savalle@obspm.fr
 
 import time
-# Mount control: use SharpCap exposed classes
+import sys
+import clr
+
+# Mount control: use SharpCap classes
 from SharpCap.Base import RADecPosition, Epoch
 
-# GUI: use .NET classes
-import clr
+# SAMP Control Panel GUI: use IronPython .NET classes
 clr.AddReference("System.Windows.Forms")
 clr.AddReference("System.Drawing")
 from System.Windows.Forms import *
@@ -23,24 +25,20 @@ def samp_init():
 	"""
 	init SharpCap for using SAMP. Customize for your system
 	"""
-	# Import SharpNum
-	import clr
+	# NumSharp library for astropy.samp
 	clr.AddReferenceToFileAndPath('C:\\USERS\\USER\\Lib\\NumSharp.0.20.5\\NumSharp.Core.dll')
 	import NumSharp.np as np 
 
-	# Change sys.path to use astropy.samp
-	import sys
+	# Change sys.path to use modified astropy.samp installed with conda
 	#sys.path=['', 'C:\\USERS\\USER\\.conda\\envs\\sharpcap-py3.4\\python34.zip', 'C:\\USERS\\USER\\.conda\\envs\\sharpcap-py3.4\\DLLs', 'C:\\USERS\\USER\\.conda\\envs\\sharpcap-py3.4\\lib', 'C:\\USERS\\USER\\.conda\\envs\\sharpcap-py3.4', 'C:\\USERS\\USER\\.conda\\envs\\sharpcap-py3.4\\lib\\site-packages', 'C:\\USERS\\USER\\.conda\\envs\\sharpcap-py3.4\\lib\\site-packages\\setuptools-27.2.0-py3.4.egg']
 	sys.path.append('C:\\PROGRAMDATA\MINICONDA3\\envs\\sharpcap-py3.4\\lib\\site-packages')
-	
+	# astropy.samp
 	import astropy.samp
-
-
 
 def function_samp_receive_notification_pointat(private_key, sender_id, mtype, params, extra):
 	"""
 	Called when a SAMP mtype coord.pointAt.sky is received
-    FOR TESTING
+    FOR TESTING WITH CLI
 	"""
 	
 	print("*** [func] Received Notification mtype="+mtype)
@@ -120,7 +118,7 @@ class Receiver(object):
 			else:
 				# Slew mount to coordinates
 				try:
-					# parent class is MySampClient, parent.parent class is SAMPForm
+					# parent class is SampClient, parent.parent class is SAMPForm
 					self.parent.parent.fromLabel.Text = 'Coordinates from '+str(sender_name)
 					self.parent.parent.raTextBox.Text = str(ra)
 					self.parent.parent.decTextBox.Text= str(dec)
@@ -132,7 +130,7 @@ class Receiver(object):
 			self.log_info('mtype'+str(mtype)+' not implemented')
 			
         
-class MySampClient:
+class SampClient:
 	"""
 	SAMP client
 	"""
@@ -164,9 +162,9 @@ class MySampClient:
 		from astropy.samp import SAMPIntegratedClient
 		
 		self.name = name
-		self.client = SAMPIntegratedClient(name)
 		self.parent = parent
-		
+
+		self.client = SAMPIntegratedClient(name)
 		self.receiver = Receiver(self.client, self)
 		
 
@@ -501,7 +499,7 @@ class SAMPForm(Form):
 		
 	def startSAMP(self):
 		# Create client, attach to this form
-		self.samp_client = MySampClient(parent=self)
+		self.samp_client = SampClient(parent=self)
 		# Connect to HUB
 		self.samp_client.connect()
 
@@ -540,7 +538,7 @@ def create_form():
 # main 
 print("Starting SAMP")
 samp_init()
-#c=MySampClient() # done in GUI
+#c=SampClient() # done in GUI
 # init GUI
 print("Creating GUI")
 custom_button = SharpCap.AddCustomButton("SAMP", Image.FromFile(padc_icon), "SAMP", create_form)
