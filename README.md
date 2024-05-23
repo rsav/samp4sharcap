@@ -2,7 +2,7 @@
 
 ## Installation
 
-- Retrieve the latest Miniconda installer for your architecture
+- Retrieve the latest Miniconda installer for your architecture from https://docs.anaconda.com/free/miniconda/miniconda-other-installer-links/
 - With conda, setup a python-3.4 environment to install astropy for using in SharpCap
 
 ```
@@ -24,7 +24,7 @@
 
 - Modify astropy.samp to use NumSharp 
     - Edit the astropy __init__.py file which was installed by conda (example: C:\USERS\USER\.conda\envs\sharpcap-py3.4\Lib\site-packages\astropy\__init__.py) 
-        - 1. Change function check_numpy as below:
+        - Change function check_numpy as below:
              
 ```     
 def _check_numpy():
@@ -52,7 +52,7 @@ def _check_numpy():
     return numpy
 ```
 
-        - 2. Comment the line with _initialize_astropy()
+        - Comment the line with _initialize_astropy()
 ```
 #_initialize_astropy()  
 ```
