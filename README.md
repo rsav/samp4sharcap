@@ -84,7 +84,7 @@ def _check_numpy():
 ```
 clr.AddReferenceToFileAndPath(...)
 ```
-3. Change sys.path to use modified astropy.samp installed with conda in the line
+3. Change sys.path to use modified astropy.samp installed with conda (refered as PPATH above) in the line
 
 ```
 sys.path.append(...)
