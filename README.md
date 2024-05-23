@@ -110,6 +110,14 @@ c.get_coords(‘c1’) # get reticle coordinates from Aladin
 
 ## Usage
 
-TBD
-
+After the Installation step above is performed you can 
+ 
+- Launch a SAMP-enabled application with an embedded hub such a Aladin Desktop
+- Run the customized samp.py script (Scripting/Run Script...) to see the new "SAMP" button that is setup at the right of the toolbar (below the menu).
+- Click on the SAMP button to display the SAMP control Panel
+- Send coordinates from a SAMP-enabled application 
+- The coordinates will be displayed in the SAMP control panel
+- You can click on the Slew button to slew the current mount to the position pointed
+  
+See screenshot Screenshot_SharpCap+Aladin.jpg in this repo.
 
