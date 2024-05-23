@@ -76,9 +76,19 @@ def _check_numpy():
 - Launch a SAMP hub (for example by launching Aladin Desktop)
 - Start SharpCap-4.1 and open “Show Console” in the Scripting menu to open the Python Console
 - Load the file samp.py (from this repo) in the Python editor (button load at the bottom of Python Console)
-- Configure the script:
+- Customize the script:
 
-TBD
+1. Set the path for padc_icon (the file is in this repo)
+2. Set the path for NumSharp to NLIB as noted above in the line
+
+```
+clr.AddReferenceToFileAndPath(...)
+```
+3. Change sys.path to use modified astropy.samp installed with conda in the line
+
+```
+sys.path.append(...)
+```
 
 - Run samp_init() (in the Python Console) to init SAMP in IronPython
 
