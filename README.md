@@ -66,11 +66,16 @@ def _check_numpy():
 #_initialize_astropy()  
 ```
 
+
 ### Test
 
 - Launch a SAMP hub (for example by launching Aladin Desktop)
 - Start SharpCap-4.1 and open “Show Console” in the Scripting menu to open the Python Console
-- Load the file samp.py (from this repo) in the Python editor (button load at the bottom of Python Console) 
+- Load the file samp.py (from this repo) in the Python editor (button load at the bottom of Python Console)
+- Configure the script:
+
+TBD
+
 - Run samp_init() (in the Python Console) to init SAMP in IronPython
 
 ```
