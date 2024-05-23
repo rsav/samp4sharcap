@@ -23,8 +23,7 @@
 
 ### NumSharp
 
-- Install NumSharp.0.20.5.zip from github https://github.com/SciSharp/NumSharp
-    - Extract zip into NLIB (example C:\USERS\USER\Lib)
+- Install NumSharp.0.20.5.zip from github https://github.com/SciSharp/NumSharp: extract the zip file into a directory that we will refer later as NLIB
 
 ### Modifications of astropy
 
