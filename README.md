@@ -27,7 +27,7 @@
 
 ### Modifications of astropy
 
-We need to modify astropy.samp to use NumSharp by editing the astropy __init__.py file which was installed by conda (example: C:\USERS\USER\.conda\envs\sharpcap-py3.4\Lib\site-packages\astropy\__init__.py)
+We need to modify astropy.samp to use NumSharp by editing the astropy __init__.py file which was installed by conda (example: C:\USERS\USER\\.conda\envs\sharpcap-py3.4\Lib\site-packages\astropy\__init__.py)
 
 1. Change function check_numpy as below:
              
