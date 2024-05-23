@@ -2,6 +2,8 @@
 
 ## Installation
 
+### Python
+
 - Retrieve the latest Miniconda installer for your architecture from https://docs.anaconda.com/free/miniconda/miniconda-other-installer-links/
 - With conda, setup a python-3.4 environment to install astropy for using in SharpCap
 
@@ -12,19 +14,23 @@
     pip install --only-binary :all: astropy # NB: remove "--only-binary :all:" to build it if Visual Studio (Build Tools) is installed
 ```
 
-- Get the python path in conda env
+- Note the python path in your conda env, this will be refered later as PPATH
 
 ```
     conda activate sharpcap-py3.4
     python -c "import sys; print(sys.path)" # copy result to clipboard => PPATH  
 ```
 
+### NumSharp
+
 - Install NumSharp.0.20.5.zip from github https://github.com/SciSharp/NumSharp
     - Extract zip into NLIB (example C:\USERS\USER\Lib)
 
-- Modify astropy.samp to use NumSharp 
-    - Edit the astropy __init__.py file which was installed by conda (example: C:\USERS\USER\.conda\envs\sharpcap-py3.4\Lib\site-packages\astropy\__init__.py) 
-        - Change function check_numpy as below:
+### Modifications of astropy
+
+We need to modify astropy.samp to use NumSharp by editing the astropy __init__.py file which was installed by conda (example: C:\USERS\USER\.conda\envs\sharpcap-py3.4\Lib\site-packages\astropy\__init__.py)
+
+1. Change function check_numpy as below:
              
 ```     
 def _check_numpy():
@@ -52,28 +58,38 @@ def _check_numpy():
     return numpy
 ```
 
-        - Comment the line with _initialize_astropy()
+
+2. Comment the line with _initialize_astropy()
+
+
 ```
 #_initialize_astropy()  
 ```
 
+### Test
+
 - Start SharpCap-4.1 and open “Show Console” in the Scripting menu
-- Load file in the editor (bottom of Console): samp.py
-- Init SAMP in IronPython
+- Load file in the editor (bottom of Console) the file samp.py from this repo
+- Run samp_init() to init SAMP in IronPython
+
 ```
 samp_init()
 ```
 
-- Init the client 
+- Create the client 
 
 ```
 c=SampClient()
 ```
 
-- Interact with other SAMP Apps. Examples:
+- Interact with other SAMP Apps using the client Examples:
 
 ```
 c.get_coords(‘c1’) # get reticle coordinates from Aladin
 ```
+
+## Usage
+
+TBD
 
 
