@@ -68,9 +68,9 @@ def _check_numpy():
 
 ### Test
 
-- Start SharpCap-4.1 and open “Show Console” in the Scripting menu
-- Load file in the editor (bottom of Console) the file samp.py from this repo
-- Run samp_init() to init SAMP in IronPython
+- Start SharpCap-4.1 and open “Show Console” in the Scripting menu to open the Python Console
+- Load the file samp.py (from this repo) in the Python editor (button load at the bottom of Python Console) 
+- Run samp_init() (in the Python Console) to init SAMP in IronPython
 
 ```
 samp_init()
